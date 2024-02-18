@@ -27,10 +27,11 @@ func SetOut(o io.Writer) {
 func Init() {
 	var dummyLog logFunc = func(format string, v ...any) {}
 
+	var err error
 	if logFile := os.Getenv("LOG_FILE"); logFile != "" {
-		out = os.NewFile(0, logFile)
-		if out == nil {
-			log.Fatalf("Log file cannot open: %v", logFile)
+		out, err = os.OpenFile(logFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+		if err != nil {
+			log.Fatalf("Log file cannot open: %v %s", logFile, err)
 		}
 	}
 
